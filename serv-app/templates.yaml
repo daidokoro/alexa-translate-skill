@@ -1,0 +1,1 @@
+translate_response: <speak>{{ text }}. <audio src='{{ translation_url }}' /></speak>

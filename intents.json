@@ -1,0 +1,13 @@
+{
+  "intents": [
+    {
+      "intent": "TranslateIntent",
+      "slots": [
+        {
+          "name": "text",
+          "type": "AMAZON.LITERAL"
+        }
+      ]
+    }
+  ]
+}
