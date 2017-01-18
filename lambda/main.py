@@ -19,19 +19,30 @@ class SkillRequest:
     s3 = client('s3')
     bucket = 'alexa-translate'
 
+    lang_spec = {
+        'spanish': ('es', 'Penelope'),
+        'japanese': ('ja', 'Mizuki')
+    }
 
-    def __init__(self, text):
+    def __init__(self, text, lang='spanish'):
         self.text = text
+        self.err = None
 
-        # Run
-        self._translate()
-        self._get_stream()
-        self.save_mp3_to_s3()
-        self._get_url()
+        if lang not in SkillRequest.lang_spec.keys():
+            self.err = "I'm sorry, Pablo only translates Japanese and Spanish."
+        else:
+            self.lang_code = SkillRequest.lang_spec[lang.lower()][0]
+            self.voice_id = SkillRequest.lang_spec[lang.lower()][1]
+
+            # Run
+            self._translate()
+            self._get_stream()
+            self.save_mp3_to_s3()
+            self._get_url()
 
     def _translate(self):
         # Translate text using Go Binary & Google Translate API
-        cmd = ['./translate', '-l', 'es', '-t', self.text]
+        cmd = ['./translate', '-l', self.lang_code, '-t', self.text]
 
         self.translation, self.err = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
 
@@ -41,7 +52,7 @@ class SkillRequest:
         self.response = SkillRequest.polly.synthesize_speech(
             OutputFormat='mp3', #|'ogg_vorbis'|'pcm',
             Text=self.translation,
-            VoiceId='Miguel'
+            VoiceId=self.voice_id,
         )['AudioStream'].read()
 
     def save_mp3(self, m):
@@ -52,7 +63,7 @@ class SkillRequest:
 
     def save_mp3_to_s3(self):
         # Saves mp3 file to s3 and retreives URL
-        self.key = self.text.replace(' ', '').lower() + ".mp3"
+        self.key = "%s_%s.mp3" % (self.text.replace(' ', '').lower(), self.lang_code)
         SkillRequest.s3.put_object(
             Bucket=SkillRequest.bucket,
             Body=self.response,
@@ -71,6 +82,46 @@ class SkillRequest:
             }
         )).encode('utf-8')
 
+    @staticmethod
+    def Translate(text, lang):
+        ''''Runs translate intent'''
+        # Getting translation and mp3 url
+        s = SkillRequest(text, lang)
+
+        if s.err:
+            return {
+                'version': '1.0',
+                'response': {
+                    'outputSpeech': {
+                        'type': 'PlainText',
+                        'text': s.err
+                    },
+                    "shouldEndSession": True
+                },
+                'card':{},
+                'sessionAttributes': {}
+            }
+
+        print("INFO: Translation --> %s\nMP3 URL --> %s" % (s.translation, s.url))
+
+        return {
+            'version': '1.0',
+            'response': {
+                'outputSpeech': {
+                    'type': 'SSML',
+                    'ssml': '''<speak>%s in %s. <audio src='%s' /></speak>''' % (s.text, lang, s.url)
+                },
+                'card':{
+                    "type": "Simple",
+                    "title": "Translation",
+                    "content": "%s in %s is %s" % (text, lang, s.translation)
+                },
+                "shouldEndSession": True
+            },
+            'sessionAttributes': {}
+        }
+
+
 
 # --- AWS Lambda handler
 def handler(event, context):
@@ -81,25 +132,12 @@ def handler(event, context):
     if (_id != app_id):
         raise ValueError("Invalid Application ID")
 
-    intent = event['request']['intent']['name'] # Not used (for now).
+    # intent = event['request']['intent']['name']
     text = event['request']['intent']['slots']['text']['value']
+    lang = event['request']['intent']['slots']['lang']['value']
 
     # Translating
-    print("Translating --> %s" % text)
+    print("INFO: Translating --> %s to %s" % (text, lang))
 
     # Getting translation and mp3 url
-    s = SkillRequest(text)
-
-    print("Translation --> %s\nMP3 URL --> %s" % (s.translation, s.url))
-
-    return {
-        'version': '1.0',
-        'response': {
-            'outputSpeech': {
-                'type': 'SSML',
-                'ssml': '''<speak>%s. <audio src='%s' /></speak>''' % (s.text, s.url)
-            },
-            "shouldEndSession": True
-        },
-        'sessionAttributes': {}
-    }
+    return SkillRequest.Translate(text, lang)
