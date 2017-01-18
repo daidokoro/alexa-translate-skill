@@ -1,0 +1,7 @@
+TranslateIntent Silvia translate {value|text} to {value|lang}
+
+TranslateIntent ask Silvia to translate {value|text} to {value|lang}
+
+TranslateIntent Silvia {value|text} in {value|lang}
+
+TranslateIntent ask Silvia {value|text} {value|lang}
