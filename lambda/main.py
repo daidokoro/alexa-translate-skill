@@ -3,6 +3,7 @@ from xml.sax.saxutils import escape
 import json
 import subprocess
 import os
+import re
 
 
 # Alexa Application ID - stored in lambda env variable
@@ -19,17 +20,34 @@ class SkillRequest:
     s3 = client('s3')
     bucket = 'alexa-translate'
 
+    # SUpported languages
     lang_spec = {
-        'spanish': ('es', 'Penelope'),
-        'japanese': ('ja', 'Mizuki')
+        'spanish': ('es', 'Conchita'),
+        'japanese': ('ja', 'Mizuki'),
+        'italian': ('it', 'Carla'),
+        'french': ('fr', 'Celine'),
+        'german': ('de', 'Marlene')
     }
 
-    def __init__(self, text, lang='spanish'):
+    # Generic Response strings
+    example = '''
+        Try, "Simply Translate I believe I can fly in spanish"
+    '''
+
+    err_resp = '''
+        I'm Sorry, Simply Translate needs both Language and the word you want translated to be specified.
+
+    ''' + example
+
+    def __init__(self, text, lang):
         self.text = text
         self.err = None
 
         if lang not in SkillRequest.lang_spec.keys():
-            self.err = "I'm sorry, Pablo only translates Japanese and Spanish."
+            self.err = '''
+                I'm sorry, I could not identify a language that Simply Translate supports.
+                I've placed a list of supported languages in your Cards.
+            '''
         else:
             self.lang_code = SkillRequest.lang_spec[lang.lower()][0]
             self.voice_id = SkillRequest.lang_spec[lang.lower()][1]
@@ -82,62 +100,120 @@ class SkillRequest:
             }
         )).encode('utf-8')
 
+
     @staticmethod
-    def Translate(text, lang):
-        ''''Runs translate intent'''
-        # Getting translation and mp3 url
-        s = SkillRequest(text, lang)
+    def Parse(body):
+        '''Contructs text request from multi-slot input'''
 
-        if s.err:
-            return {
-                'version': '1.0',
-                'response': {
-                    'outputSpeech': {
-                        'type': 'PlainText',
-                        'text': s.err
-                    },
-                    "shouldEndSession": True
-                },
-                'card':{},
-                'sessionAttributes': {}
-            }
+        values = [ v for v in body.values() if 'value' in v.keys() ]
+        values.sort(key=lambda k: k['name'])
+        text = ' '.join([s['value'] for s in values]).strip(' ')
 
-        print("INFO: Translation --> %s\nMP3 URL --> %s" % (s.translation, s.url))
+        # Evaluate last word as the language to translate to
+        lang = text.split(' ')[len(text.split(' ')) - 1].lower()
 
+        if lang not in SkillRequest.lang_spec.keys():
+            lang = ''
+
+        # remove in <Language> from the end of the string
+        text = re.sub('( %s$| in %s$| to %s$)' % (lang, lang, lang), '', text)
+
+        return text, lang
+
+
+    @staticmethod
+    def Response(resp, card_data={}, req_type='PlainText'):
+        '''Generates response Dict/Json'''
         return {
             'version': '1.0',
             'response': {
                 'outputSpeech': {
-                    'type': 'SSML',
-                    'ssml': '''<speak>%s in %s. <audio src='%s' /></speak>''' % (s.text, lang, s.url)
+                    'type': req_type,
+                    'text' if req_type == 'PlainText' else 'ssml': resp
                 },
-                'card':{
-                    "type": "Simple",
-                    "title": "Translation",
-                    "content": "%s in %s is %s" % (text, lang, s.translation)
-                },
+                'card':card_data,
                 "shouldEndSession": True
             },
             'sessionAttributes': {}
         }
 
 
+    @staticmethod
+    def Card(content):
+        '''Returns a Simple Card'''
+        return {
+            "type": "Simple",
+            "title": "Translation",
+            "content": content
+        }
+
+
+    @staticmethod
+    def onTranslate(text, lang):
+        ''''Runs translate intent'''
+        # Getting translation and mp3 url
+        print("INFO: Translating --> %s to %s" % (text, lang))
+        s = SkillRequest(text, lang)
+
+        if s.err:
+            card = SkillRequest.Card(s.err)
+            return SkillRequest.Response(s.err, card_data=card)
+
+        print("INFO: Translation --> %s\nMP3 URL --> %s" % (s.translation, s.url))
+
+        resp = '''<speak><s>%s in, %s</s> <audio src='%s' /></speak>''' % (s.text, lang, s.url)
+        card = SkillRequest.Card("%s in, %s\n\n%s" % (text, lang, s.translation))
+
+        return SkillRequest.Response(
+            resp,
+            card_data=card,
+            req_type='SSML'
+        )
+
+
+    @staticmethod
+    def onLaunch():
+        '''Runs Launch Intent'''
+        welcome_string = 'Welcome to Simply Translate.\n\n'
+
+        welcome_string += SkillRequest.example
+
+        card = SkillRequest.Card(welcome_string)
+
+        return SkillRequest.Response(welcome_string, card_data=card)
+
+
 
 # --- AWS Lambda handler
 def handler(event, context):
-    # Verify app id
+    # for debug print event
     print(event)
 
+    #  Validate App iD
     _id = event['session']['application']['applicationId']
     if (_id != app_id):
         raise ValueError("Invalid Application ID")
 
-    # intent = event['request']['intent']['name']
-    text = event['request']['intent']['slots']['text']['value']
-    lang = event['request']['intent']['slots']['lang']['value']
+    req_type = event['request']['type']
 
-    # Translating
-    print("INFO: Translating --> %s to %s" % (text, lang))
+    print("Intent type: %s" % req_type)
 
-    # Getting translation and mp3 url
-    return SkillRequest.Translate(text, lang)
+    if 'IntentRequest'.lower() in req_type.lower():
+        body = event['request']['intent']['slots']
+
+        text, lang = SkillRequest.Parse(body)
+
+        if not lang:
+            card = SkillRequest.Card(SkillRequest.err_resp)
+            return SkillRequest.Response(SkillRequest.err_resp, card_data=card)
+
+        # Getting translation and mp3 url
+        return SkillRequest.onTranslate(text, lang)
+
+    elif 'LaunchRequest'.lower() in req_type.lower():
+        print('something')
+        return SkillRequest.onLaunch()
+
+    else:
+        # Assume session end at this point - empty response
+        return SkillRequest.Response("")
