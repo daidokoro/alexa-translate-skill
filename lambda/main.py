@@ -4,6 +4,7 @@ import json
 import subprocess
 import os
 import re
+import random
 
 
 # Alexa Application ID - stored in lambda env variable
@@ -30,14 +31,16 @@ class SkillRequest:
     }
 
     # Generic Response strings
-    example = '''
-        Try, "Simply Translate I believe I can fly in spanish"
-    '''
+    examples = [
+        '''Try, "tell Simply Translate I love horses in Spanish"''',
+        '''Try, "tell Simply Translate I love cats to Japanese"''',
+        '''Try, "tell Simply Translate I love dogs in German"'''
+    ]
 
     err_resp = '''
         I'm Sorry, Simply Translate needs both Language and the word you want translated to be specified.
 
-    ''' + example
+    '''
 
     def __init__(self, text, lang):
         self.text = text
@@ -58,6 +61,7 @@ class SkillRequest:
             self.save_mp3_to_s3()
             self._get_url()
 
+
     def _translate(self):
         # Translate text using Go Binary & Google Translate API
         cmd = ['./translate', '-l', self.lang_code, '-t', self.text]
@@ -72,6 +76,7 @@ class SkillRequest:
             Text=self.translation,
             VoiceId=self.voice_id,
         )['AudioStream'].read()
+
 
     def save_mp3(self, m):
         # Save MP3 to disk - Not used in the skill process
@@ -102,6 +107,13 @@ class SkillRequest:
 
 
     @staticmethod
+    def Example():
+        '''Return random example'''
+        return SkillRequest.examples[
+            random.randint(0, len(SkillRequest.examples)-1)
+        ]
+
+    @staticmethod
     def Parse(body):
         '''Contructs text request from multi-slot input'''
 
@@ -122,7 +134,7 @@ class SkillRequest:
 
 
     @staticmethod
-    def Response(resp, card_data={}, req_type='PlainText'):
+    def Response(resp, card_data={}, req_type='PlainText', session_end=True):
         '''Generates response Dict/Json'''
         return {
             'version': '1.0',
@@ -132,7 +144,7 @@ class SkillRequest:
                     'text' if req_type == 'PlainText' else 'ssml': resp
                 },
                 'card':card_data,
-                "shouldEndSession": True
+                "shouldEndSession": session_end
             },
             'sessionAttributes': {}
         }
@@ -161,26 +173,24 @@ class SkillRequest:
 
         print("INFO: Translation --> %s\nMP3 URL --> %s" % (s.translation, s.url))
 
-        resp = '''<speak><s>%s in, %s</s> <audio src='%s' /></speak>''' % (s.text, lang, s.url)
-        card = SkillRequest.Card("%s in, %s\n\n%s" % (text, lang, s.translation))
+        resp = '''<speak><audio src='%s' /></speak>''' % s.url
+        card = SkillRequest.Card('''"%s" in, %s\n\n%s''' % (text, lang, s.translation))
 
         return SkillRequest.Response(
             resp,
             card_data=card,
-            req_type='SSML'
+            req_type='SSML',
         )
 
 
     @staticmethod
     def onLaunch():
         '''Runs Launch Intent'''
-        welcome_string = 'Welcome to Simply Translate.\n\n'
-
-        welcome_string += SkillRequest.example
+        welcome_string = 'Welcome to Simply Translate. What would you like to translate?\n\n'
 
         card = SkillRequest.Card(welcome_string)
 
-        return SkillRequest.Response(welcome_string, card_data=card)
+        return SkillRequest.Response(welcome_string, card_data=card, session_end=False)
 
 
 
@@ -204,8 +214,8 @@ def handler(event, context):
         text, lang = SkillRequest.Parse(body)
 
         if not lang:
-            card = SkillRequest.Card(SkillRequest.err_resp)
-            return SkillRequest.Response(SkillRequest.err_resp, card_data=card)
+            card = SkillRequest.Card(SkillRequest.err_resp + SkillRequest.Example())
+            return SkillRequest.Response(SkillRequest.err_resp + SkillRequest.Example(), card_data=card)
 
         # Getting translation and mp3 url
         return SkillRequest.onTranslate(text, lang)
