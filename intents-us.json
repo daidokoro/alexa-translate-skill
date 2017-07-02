@@ -1,0 +1,60 @@
+{
+  "intents": [
+    {
+      "intent": "TranslateIntent",
+      "slots": [
+        {
+          "name": "word_a",
+          "type": "AMAZON.LITERAL"
+        },
+                {
+          "name": "word_b",
+          "type": "AMAZON.LITERAL"
+        },
+                {
+          "name": "word_c",
+          "type": "AMAZON.LITERAL"
+        },
+                {
+          "name": "word_d",
+          "type": "AMAZON.LITERAL"
+        },
+                {
+          "name": "word_e",
+          "type": "AMAZON.LITERAL"
+        },
+                {
+          "name": "word_f",
+          "type": "AMAZON.LITERAL"
+        },
+                {
+          "name": "word_g",
+          "type": "AMAZON.LITERAL"
+        },
+                {
+          "name": "word_h",
+          "type": "AMAZON.LITERAL"
+        },
+                {
+          "name": "word_i",
+          "type": "AMAZON.LITERAL"
+        },
+                {
+          "name": "word_j",
+          "type": "AMAZON.LITERAL"
+        },
+
+
+      ]
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "daidokoro-translate",
+  "private_key_id": "0d176756bca22d8b6ea96ffe2c5caa92f4cc105f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvZaP/JFIaSeJH\nyFbnN/awqZiCT8QML23FyPBG3JZOoM7cXILiEq0kgcAQrWMqg7QCe0J/aNP+OqrT\nstQDj9aca9z6d/QuHwE+oC8EVedmgbzdTZQZInoGVxNE2FmFGiR5J9X+gOLzxJBu\nJ4a9sSZm192K9J93AC9VUtfSIy8hbR+hp+MU4W1XpVtsnwfIH9BfvIh4Vcz9nUpj\nb32I3xf6qUuLxqkaBIzE9PPQswHoCptkG/qGUptYMVVHdtpapXNGNIukVfoW7H76\nBIqtXMj2QX8iTvCu12aS3AQe6xu4tN1Fbyx6zEnCn6/t+G3Wa2x7I5In9ybDph7R\nMiNl5k8nAgMBAAECggEAKRNwmKv03ls3NwBf+b5Nc4oEQWBU1VW2K3+nZbD7MmbO\niyTPMgqVqdsJE97HPomheoNLS3NNUliC8RkMNdlVtUQ9eBrngHWaYQQ6fpVvn736\ncQleCZTdZua1iIXyUQ2SRR1jLDsa62O5P1LaZ0o5aBRdudEYF1Jfw2enS3sZ6oW0\nSuLnFLca/V/Eyb54rw2v7+7oFFdYMHgOAoE7K0MwhiqyupswuUW90SwqEFK24bBM\n58A5iComP2Oj6dGW/gYMtWMYXE2QjEWK6FxcEB/MOs3k4rv9kmzWoeUqFQWXDQ/t\n4jXu5zU5BkOS1cqAezntbseILty9LD7+wWhikW6/IQKBgQDi7cgEwPK3/rb6F7cN\nu3jxSM3pxCjw5PYHL6GLK3LM5by6/pAfa0JnEohXF1hLs4RIabMGinn0wpGZQi0p\nJa5SWbS0fjjNB3xvpBb4co1cix8JveUyJO+R7zd7d+pnNYRm3DMtV0hZ27nx59ow\nB8f9gt1lqM3NRc2i9Mqi0fNb+wKBgQDF3dqhr9Wgheub0Z2toYdUjek3KzYO31Z9\nzjRVCKab7BrrVYmdKCU9ZncZi/j7YsZDocnfwvDDP3VhMSnrqLR/aDMEmCvF8vsM\ngHCqpAcxy8ZTOMOtFbU9eb8nrGmV+kyirTlPLqfC4BUHDucYA/kn+B/lAD87lct9\nha8onLvlxQKBgAtgzMSgQAtFtDr58W241qmScvCjq0HY2RUnKDxoI0tuwXXGyccp\ng5zTaw6i1wSErb9LvXQ4gUDqeI5sqQMFJqZuZQcfxQ1SsMSQP66ZX8kiGJ5ObS2E\neJaine+M5a3jGw5lQBOn6rLGt54Pd/ssiLSHWT59pkQCmfrvtzFOwZr9AoGBAMQL\nyuHEvF9uEUGz8QzmLJYkfVxCHi+iLao8szFFfv6icxGVEOJ7slohugO/4hQBi/va\nw5BHMBHkQELqWWS7JQvPjC0TMNvSodeDMx5/ovk9s+UlKwvFpGuiwzll5L/K3j+Y\nbl38FhBJwcvagjITTbzCZaeaFQzOoG5gFGqi0LEZAoGAdHVHBVFZrU2qYTuJSVjG\nryOmXlAAEV2FVjBr9TPGHZOgTFf7QeqhQ2BfDzW3aKvikVZkNSU6UfwQIHHPsMRr\nufThmS1cJayb4xd6LB4EWDBeS3QQBb12xtyKzWl4oTMZDWyhgJGYdgzoauv/l5U7\n3CAlpQicV14xaK0gQDVS3C0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "google-translate-call@daidokoro-translate.iam.gserviceaccount.com",
+  "client_id": "117441238635409040097",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-translate-call%40daidokoro-translate.iam.gserviceaccount.com"
+}

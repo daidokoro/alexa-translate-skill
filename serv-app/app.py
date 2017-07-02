@@ -11,8 +11,7 @@ class SkillRequest:
     SkillRequest Class handles the interaction between AWS S3 & Polly and the Google Translate Binary.
     '''
 
-    region = 'eu-west-1'
-    polly = client('polly', region_name=region)
+    polly = client('polly', region_name="eu-west-1")
     s3 = client('s3')
     bucket = 'alexa-translate'
 

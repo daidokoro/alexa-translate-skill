@@ -1,0 +1,58 @@
+{
+  "session": {
+    "sessionId": "SessionId.797f1219-77dc-4df4-907c-e8167084e3e8",
+    "application": {
+      "applicationId": "amzn1.ask.skill.bf4e52d5-3e26-4626-9453-1f09556645dd"
+    },
+    "attributes": {},
+    "user": {
+      "userId": "amzn1.ask.account.AGFTY2XFXO6ZISPNV6BSRHG7A2Y4F4R3YYX6PMWNBQPGYFCYPN22SXUMHSQJCQGCIGLWX7BC7WRZQZRPGUZWTZLWEIPGWQVJWW4WO5DDPRQQQMKPM377HERPYJVXFKLUAEKKGB4IWO4ZHZCQR34VONNBAVVW2AQGXXKCOUJPZVPIRA4KTLTFHGPHKS7AV5IBQLPQUJTFXKKPGWA"
+    },
+    "new": true
+  },
+  "request": {
+    "type": "IntentRequest",
+    "requestId": "EdwRequestId.a69fbedc-b926-49ee-a78a-b7f967693f25",
+    "locale": "en-US",
+    "timestamp": "2017-02-03T11:11:27Z",
+    "intent": {
+      "name": "TranslateIntent",
+      "slots": {
+        "word_g": {
+          "name": "word_g"
+        },
+        "word_h": {
+          "name": "word_h"
+        },
+        "word_e": {
+          "name": "word_e"
+        },
+        "word_f": {
+          "name": "word_f"
+        },
+        "word_i": {
+          "name": "word_i"
+        },
+        "word_j": {
+          "name": "word_j"
+        },
+        "word_c": {
+          "name": "word_c",
+          "value": "spanish"
+        },
+        "word_d": {
+          "name": "word_d"
+        },
+        "word_a": {
+          "name": "word_a",
+          "value": "Hello"
+        },
+        "word_b": {
+          "name": "word_b",
+          "value": "in"
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
