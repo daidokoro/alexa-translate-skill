@@ -1,2 +1,2 @@
-Bucket: daidokoro-dev
-Key: lambdas/alexa-translate.zip
+bucket: daidokoro-dev
+key: lambdas/alexa-translate.zip
