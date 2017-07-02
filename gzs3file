@@ -1,4 +1,2 @@
-{
-	"Bucket":"daidokoro-dev",
-	"Key":"lambdas/alexa-translate.zip"
-}
+Bucket: daidokoro-dev
+Key: lambdas/alexa-translate.zip
