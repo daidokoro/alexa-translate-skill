@@ -1,7 +1,7 @@
 {
   "name": "alexa",
   "description": "A translation Skill for Alexa",
-  "memory": 128,
+  "memory": 228,
   "timeout": 15,
   "role": "arn:aws:iam::091066890486:role/alexa-translate-role",
   "environment": {
